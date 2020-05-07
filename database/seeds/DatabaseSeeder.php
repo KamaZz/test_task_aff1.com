@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        factory(\App\Models\User::class, 100)->create();
+        factory(\App\Models\User::class, 1000000)->create();
         factory(\App\Models\Mail::class, 10000)->create();
     }
 }
