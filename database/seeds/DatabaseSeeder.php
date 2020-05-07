@@ -11,6 +11,25 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UserSeeder::class);
+        $regions = [
+            'Africa' => DateTimeZone::AFRICA,
+            'America' => DateTimeZone::AMERICA,
+            'Antarctica' => DateTimeZone::ANTARCTICA,
+            'Asia' => DateTimeZone::ASIA,
+            'Atlantic' => DateTimeZone::ATLANTIC,
+            'Europe' => DateTimeZone::EUROPE,
+            'Indian' => DateTimeZone::INDIAN,
+            'Pacific' => DateTimeZone::PACIFIC
+        ];
+        foreach ($regions as $name => $mask) {
+            \App\Models\Timezone::insert(
+                array_map(function($z) {
+                    return ['name' => $z];
+                }, DateTimeZone::listIdentifiers($mask))
+            );
+        }
+
+        factory(\App\Models\User::class, 100)->create();
+        factory(\App\Models\Mail::class, 10000)->create();
     }
 }
