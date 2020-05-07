@@ -2,10 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\Checkout as SendOrder;
 use App\Models\Mail;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 
 class SendEmails extends Command
 {
@@ -44,6 +46,7 @@ class SendEmails extends Command
         $users = User::all();
 
         $users->each(function($user) {
+
             $mails = Mail::where('scheduled_at', $user->adoptedTime->format('H:i'))->get();
 
             if ($mails->isEmpty())
@@ -52,14 +55,16 @@ class SendEmails extends Command
             $this->queue[] = $mails->map(function ($mail) use ($user) {
                return (object) ['user_id' => $user->id, 'mail_id' => $mail->id];
             });
-
-            $this->info($user->id);
-
-            if ($user->id === 7)
-            return false;
         });
 
-        dd($this->queue[0]);
+        $this->queue = Arr::flatten($this->queue);
+
+//        Not tested
+        foreach ($this->queue as $email) {
+            \Illuminate\Support\Facades\Mail::raw(Mail::find($email->mail_id)->body, function ($message) use ($email) {
+                $message->to(User::find($email->user_id)->email);
+            });
+        }
 
     }
 }
