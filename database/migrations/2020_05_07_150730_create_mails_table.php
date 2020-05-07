@@ -19,6 +19,8 @@ class CreateMailsTable extends Migration
             $table->text('body');
             $table->time('scheduled_at', 0);
             $table->timestamps();
+
+            $table->index('scheduled_at');
         });
     }
 
